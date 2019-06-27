@@ -1,0 +1,235 @@
+import React, { Component } from 'react';
+import { Modal, Text, View, Alert, StyleSheet, TextInput, Button, FlatList, AsyncStorage, TouchableOpacity, DatePickerAndroid, CheckBox } from 'react-native';
+
+export default class ToDoList extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            IsChecked: false,
+            modalVisible: false,
+            tasks: [],
+            task: "",
+            date: "",
+            checkView: false,
+        };
+    }
+
+    setModalVisible(visible) {
+        this.setState({ modalVisible: visible });
+    }
+
+    changeTaskHandler = task => {
+        this.setState({ task: task });
+    };
+
+    addTask = () => {
+        let notEmptyDate = this.state.date.trim().length > 0;
+        let notEmptyText = this.state.task.trim().length > 0;
+
+        if (notEmptyDate && notEmptyText) {
+            let tasks = this.state.tasks;
+            tasks.unshift({
+                task: this.state.task,
+                date: this.state.date,
+                // isSelected: false
+            });
+            this.state.task = '';
+            this.state.date = '';
+            this.setState({ tasks: tasks });
+            Tasks.save(this.state.tasks)
+            Tasks.all(tasks => this.setState({ tasks: tasks || [] }))
+        }
+        this.setModalVisible(!this.state.modalVisible);
+    };
+
+    deleteTask = i => {
+        this.setState(
+            prevState => {
+                let tasks = prevState.tasks.slice();
+
+                tasks.splice(i, 1);
+
+                return { tasks: tasks };
+            },
+            () => Tasks.save(this.state.tasks)
+        );
+    };
+
+    componentDidMount() {
+        Tasks.all(tasks => this.setState({ tasks: tasks || [] }))
+    }
+
+    showDatePicker = async () => {
+        try {
+            const { action, year, month, day } = await DatePickerAndroid.open({
+                date: new Date(),
+            });
+            if (action !== DatePickerAndroid.dismissedAction) {
+                this.setState({ date: `${day}/${month + 1}/${year}` });
+            }
+        } catch ({ code, message }) {
+            console.warn(`error `, code, message);
+        }
+    };
+
+    checkViewMethod = (item, index) => {
+        let tempArr = [...this.state.tasks]        //copying array 
+        // if(tempArr[index].isSelected===true){
+        //     tempArr[index].isSelected=false;
+        // }else{
+        //     tempArr[index].isSelected=true;
+        // }
+        tempArr[index].isSelected = !item.isSelected
+        this.setState({ tasks: tempArr })
+    }
+    render() {
+        console.log('checkView' + this.state.checkView)
+        return (
+            <View style={styles.container}>
+                <Modal
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                        Alert.alert('Modal has been closed.');
+                    }}>
+                    <View style={{ marginTop: 40, backgroundColor: 'white' }}>
+                        <View>
+                            <Text style={styles.text}>Do by?</Text>
+                            <TouchableOpacity onPress={() => this.showDatePicker({ date: this.state.date })}>
+                                <View style={{ height: 50, borderColor: 'gray', borderWidth: 1, width: '95%', marginLeft: 10, }}>
+                                    <Text style={{ fontSize: 20, marginTop: 8 }}
+                                    >
+                                        {this.state.date}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <Text style={styles.text}>Do what?</Text>
+                            <TextInput style={{ height: 50, borderColor: 'gray', borderWidth: 1, width: '95%', marginLeft: 10, marginBottom: 50, fontSize: 20 }}
+                                onChangeText={this.changeTaskHandler}
+                                value={this.state.task}
+                            />
+                            <Button
+                                onPress={this.addTask}
+                                style={{ borderWidth: 1, height: 20, width: '40%', fontSize: 40 }}
+                                title="Save Details"
+                                color="green"
+                            />
+                        </View>
+                    </View>
+                </Modal>
+                <Text style={styles.header}>To-Do</Text>
+                <Button
+                    onPress={() => {
+                        this.setModalVisible(true);
+                    }}
+                    style={{ borderWidth: 1, height: 20, width: '80%', fontSize: 50 }}
+                    title="ADD TO-DO"
+                    color="#841584"
+                />
+                <FlatList
+                    style={styles.list}
+                    data={this.state.tasks}
+                    renderItem={({ item, index }) =>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', width: "100%" }}>
+                            <View style={styles.listItemCont}>
+                                <Text style={styles.listItem}>
+                                    Task:  {item.task}
+                                </Text>
+                                <Text style={styles.listItem}>
+                                    LastDate:  {item.date}
+                                </Text>
+                            </View>
+                            <TouchableOpacity
+                                style={{ height: 20, width: 20, marginLeft: 5 }}
+                                onPress={() => this.checkViewMethod(item, index)}>
+                                {item.isSelected === true ?
+                                    <View style={{ height: 20, width: 20, backgroundColor: 'blue', marginLeft: 5 }}>
+                                    </View>
+                                    :
+                                    <View style={{ height: 20, width: 20, borderColor: 'black', borderWidth: 3, marginLeft: 5 }}></View>
+                                }
+                            </TouchableOpacity>
+                            {/* <Button title="X" onPress={() => this.deleteTask(index)} /> */}
+                            <View style={styles.hr} />
+                        </View>}
+                    extraData={this.state}
+                    keyExtractor={(index) => index.toString()}
+                />
+
+                <View style={{ flexDirection: 'row' }}>
+                    <TouchableOpacity
+                        style={{ height: 30, width: 80, borderColor: 'black', borderWidth: 2, marginRight: 20 }}
+                    >
+                        <View style={{backgroundColor:'red', height: 30, width: 76}}>
+                            <Text style={{fontSize:18,fontFamily:'bold',color:'white',marginTop:3,marginLeft:7}}>Delete</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{ height: 30, width: 80, borderColor: 'black', borderWidth: 2, marginLeft: 30 }}
+                    >
+                        <View style={{backgroundColor:'purple', height: 30, width: 76}}>
+                            <Text style={{fontSize:18,fontFamily:'bold',color:'white',marginTop:3,marginLeft:7}}>Select All</Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+}
+let Tasks = {
+    all(callback) {
+        AsyncStorage.getItem("TASKS", (err, tasks) => {
+            return callback(JSON.parse(tasks));
+        });
+    },
+    save(tasks) {
+        AsyncStorage.setItem("TASKS", JSON.stringify(tasks));
+    }
+};
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: 30,
+        marginBottom: 10,
+        marginRight: 20,
+        justifyContent: 'flex-start',
+        alignItems: 'center'
+    },
+    text: {
+        fontSize: 20,
+        marginTop: 20,
+        marginLeft: 10,
+        color: 'black',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    header: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        top: 0,
+        marginTop: 30,
+        color: 'black',
+    },
+    list: {
+        marginTop: 30,
+        marginLeft: 20,
+        width: "100%",
+    },
+    listItem: {
+        margin: 5,
+        fontSize: 18,
+    },
+    hr: {
+        height: 1,
+        backgroundColor: "black"
+    },
+    listItemCont: {
+        width: "92%",
+        flexDirection: "column",
+        borderWidth: 2,
+        marginBottom: 20,
+        justifyContent: "space-between"
+    },
+});
