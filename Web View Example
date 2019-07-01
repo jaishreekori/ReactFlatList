@@ -1,0 +1,50 @@
+import React from 'react';
+import { View, WebView, StyleSheet, TextInput, Button } from 'react-native';
+
+
+export default class WebViewExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: ''
+    }
+  }
+  changeURL = (url) => {
+    this.setState({ url: this.setState({ url }) });
+  }
+  render() {
+    return (
+      <View style={styles.container}>
+        <View style={{ flexDirection: 'row' }}>
+          <TextInput
+            style={{ height: 40, borderColor: 'black', borderWidth: 1, flex: 4 }}
+            onChangeText={url}
+          //value={this.state.url}
+          />
+          <Button
+            onPress={this.changeURL}
+            style={{ height: 40, flex: 1 }}
+            title="GoTo"
+          />
+        </View>
+        <View style={{ flex: 1 }}>
+          <WebView
+            source={{ uri: this.state.url }}
+          //style={styles.loginWebView}
+          />
+        </View>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1
+  },
+  // loginWebView: {
+  //   flex: 1,
+  //   marginTop: 30,
+  //   marginBottom: 20
+  // }
+});
