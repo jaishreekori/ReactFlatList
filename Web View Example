@@ -6,19 +6,23 @@ export default class WebViewExample extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      url: ''
+      url: '',
+      finalURL: 'Google'
     }
   }
-  changeURL = (url) => {
-    this.setState({ url: this.setState({ url }) });
+  changeURL = () => {
+    // console.log("url " + this.state.url)
+    this.setState({ finalURL: this.state.url });
+    console.log(this.state.finalURL)
   }
   render() {
+    console.log(this.state.finalURL)
     return (
       <View style={styles.container}>
         <View style={{ flexDirection: 'row' }}>
           <TextInput
-            style={{ height: 40, borderColor: 'black', borderWidth: 1, flex: 4 }}
-            onChangeText={url}
+            style={styles.text}
+            onChangeText={url => this.setState({ url: url })}
           //value={this.state.url}
           />
           <Button
@@ -29,8 +33,8 @@ export default class WebViewExample extends React.Component {
         </View>
         <View style={{ flex: 1 }}>
           <WebView
-            source={{ uri: this.state.url }}
-          //style={styles.loginWebView}
+            source={{ uri: `${'https://'}` + this.state.finalURL + `${'.com'}`}}
+          //source={{ uri:"https://Google.com" }}
           />
         </View>
       </View>
@@ -42,9 +46,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1
   },
-  // loginWebView: {
-  //   flex: 1,
-  //   marginTop: 30,
-  //   marginBottom: 20
-  // }
+  text: {
+    height: 50,
+    borderColor: 'black',
+    borderWidth: 1,
+    flex: 4,
+    fontSize: 20,
+  },
 });
