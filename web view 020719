@@ -1,0 +1,104 @@
+import React from 'react';
+import {
+  View,
+  WebView,
+  StyleSheet,
+  TextInput,
+  Text,
+  Button,
+  ScrollView,
+  Keyboard,
+  TouchableOpacity,
+} from 'react-native';
+
+export default class WebViewExample extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      url: '',
+      submit: false,
+    };
+    this.handleNameChange = this.handleNameChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+
+  handleNameChange(url) {
+    this.setState({ url: url });
+  }
+  handleSubmit() {
+    alert('hi1');
+    this.setState({ submit: true });
+  }
+  render() {
+    if (!this.state.submit) {
+      return (
+        <View style={styles.container}>
+          <View>
+            <Text style={styles.header}>Search</Text>
+          </View>
+          <ScrollView>
+            <View style={styles.inputContainer}>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Enter url"
+                maxLength={20}
+                onBlur={Keyboard.dismiss}
+                value={this.state.name}
+                onChangeText={this.handleNameChange}
+              />
+            </View>
+            <View style={styles.inputContainer}>
+              <TouchableOpacity
+                style={styles.saveButton}
+                onPress={this.handleSubmit}>
+                <Text style={styles.saveButtonText}>Search</Text>
+              </TouchableOpacity>
+            </View>
+          </ScrollView>
+        </View>
+      );
+    } else {
+      return (
+        <WebView
+          source={{ uri: 'https://' + this.state.url }}
+          style={{ marginTop: 20 }}
+        />
+      );
+    }
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 20,
+    backgroundColor: '#F5FCFF',
+  },
+  header: {
+    fontSize: 25,
+    textAlign: 'center',
+    margin: 10,
+    fontWeight: 'bold',
+  },
+  textInput: {
+    borderColor: '#CCCCCC',
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    height: 50,
+    fontSize: 25,
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  saveButton: {
+    borderWidth: 1,
+    borderColor: '#007BFF',
+    backgroundColor: '#007BFF',
+    padding: 15,
+    margin: 5,
+  },
+  saveButtonText: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    textAlign: 'center',
+  },
+});
