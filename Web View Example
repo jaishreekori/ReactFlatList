@@ -7,13 +7,20 @@ export default class WebViewExample extends React.Component {
     super(props);
     this.state = {
       url: '',
-      finalURL: 'Google'
+      finalURL: ''
     }
   }
   changeURL = () => {
-    // console.log("url " + this.state.url)
-    this.setState({ finalURL: this.state.url });
-    console.log(this.state.finalURL)
+    let finalURL = this.state.url
+    var res = finalURL.match(/(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g);
+    const value = "https://" + finalURL + ".com"
+    console.log(res)
+    console.log(finalURL)
+    if (finalURL == res) {
+      this.setState({ finalURL: finalURL });
+    } else {
+      this.setState({ finalURL: value })
+    }
   }
   render() {
     console.log(this.state.finalURL)
@@ -23,7 +30,7 @@ export default class WebViewExample extends React.Component {
           <TextInput
             style={styles.text}
             onChangeText={url => this.setState({ url: url })}
-          //value={this.state.url}
+            value={this.state.url}
           />
           <Button
             onPress={this.changeURL}
@@ -33,7 +40,7 @@ export default class WebViewExample extends React.Component {
         </View>
         <View style={{ flex: 1 }}>
           <WebView
-            source={{ uri: `${'https://'}` + this.state.finalURL + `${'.com'}`}}
+            source={{ uri: this.state.finalURL }}
           //source={{ uri:"https://Google.com" }}
           />
         </View>
