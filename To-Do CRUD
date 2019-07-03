@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { Modal, Text, View, Alert, StyleSheet, TextInput, Button, FlatList, AsyncStorage, TouchableOpacity, DatePickerAndroid, WebView } from 'react-native';
 
@@ -84,11 +85,6 @@ export default class ToDoList extends Component {
 
     checkViewMethod = (item, index) => {
         let tempArr = [...this.state.tasks]        //copying array 
-        // if(tempArr[index].isSelected===true){
-        //     tempArr[index].isSelected=false;
-        // }else{
-        //     tempArr[index].isSelected=true;
-        // }
         tempArr[index].isSelected = !item.isSelected
         this.setState({ tasks: tempArr })
         Tasks.save(this.state.tasks)
@@ -138,27 +134,6 @@ export default class ToDoList extends Component {
                         </View>
                     </View>
                 </Modal>
-                <View style={{ flex: 1 }}>
-                    <View style={{ flexDirection: "row" }}>
-                        <TextInput
-                            onChangeText={url => this.setState({ url })}
-                            style={{ height: 40, width: "80%", borderColor: 'gray', borderWidth: 2 }}
-                        >
-                        </TextInput>
-                        <Button
-                            onPress={this.changeURL}
-                            style={{ borderWidth: 1, height: 40, fontSize: 30 }}
-                            title="GoTo"
-                            color="#841584"
-                        >
-                        </Button>
-                    </View>
-                    <View style={{ flex: 1 }}>
-                        <WebView
-                            source={{ uri: this.state.url }}
-                        />
-                    </View>
-
                     <Text style={styles.header}>To-Do</Text>
                     <Button
                         onPress={() => {
@@ -213,7 +188,6 @@ export default class ToDoList extends Component {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
         );
     }
 }
@@ -232,9 +206,9 @@ const styles = StyleSheet.create({
         flex: 1,
         marginTop: 30,
         marginBottom: 10,
-        // marginRight: 20,
-        // justifyContent: 'flex-start',
-        // alignItems: 'center'
+        marginRight: 20,
+        justifyContent: 'flex-start',
+        alignItems: 'center'
     },
     text: {
         fontSize: 20,
@@ -245,10 +219,9 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     header: {
-        flex: 1,
         fontSize: 30,
         fontWeight: 'bold',
-        // top: 0,
+        top: 0,
         marginTop: 30,
         color: 'black',
     },
