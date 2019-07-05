@@ -1,0 +1,138 @@
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, TouchableHighlight, Modal } from 'react-native';
+import SimpleModal from './SimpleModal';
+
+export default class MyModal extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            IsModalVisible: false,
+            ChoosenData: '',
+        }
+    }
+    changeModalVisibility = (bool) => {
+        this.setState({ IsModalVisible: bool });
+    }
+    setData = (data) => {
+        this.setState({ ChoosenData: data })
+    }
+    render() {
+        return (
+            <View style={styles.contentContainer}>
+                <Text style={styles.text}>
+                    {this.state.ChoosenData}
+                </Text>
+                <TouchableHighlight onPress={() => this.changeModalVisibility(true)} style={[styles.touchableHighlight, { backgroundColor: 'orange' }]} underlayColor={'#f1f1f1'}>
+                    <Text style={styles.text}>Open Modal</Text>
+                </TouchableHighlight>
+                <Modal
+                    transparent={true}
+                    visible={this.state.IsModalVisible}
+                    onRequestClose={() => this.changeModalVisibility(false)}
+                    animationType='fade'>
+                    <SimpleModal changeModalVisibility={this.changeModalVisibility} setData={this.setData} />
+                </Modal>
+            </View>
+        );
+    }
+}
+
+const styles = StyleSheet.create({
+    contentContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    touchableHighlight: {
+        flex: 1,
+        backgroundColor: 'white',
+        paddingVertical: 10,
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        borderRadius: 10,
+    },
+    text: {
+        margin: 5,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+})
+
+
+/////////////////////////////////////////////////////////////////
+
+import React, { Component } from 'react';
+import { Text, View, StyleSheet, TouchableHighlight, TouchableOpacity, Dimensions } from 'react-native';
+
+export default class SimpleModal extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            width: Dimensions.get('window').width,
+        };
+        Dimensions.addEventListener('change', (e) => {
+            this.setState(e.window);
+        });
+    }
+    closeModal = (data) => { 
+        this.props.changeModalVisibility(false);
+        this.props.setData(data);
+    }
+    render() {
+        return (
+            <TouchableOpacity activeOpacity={1} disabled={true} style={styles.contentContainer}>
+                <View style={[styles.modal, { width: this.state.width - 80 }]}>
+                    <View style={styles.textView}>
+                        <Text style={[styles.text, { fontSize: 20 }]}>Modal Header</Text>
+                        <Text style={styles.text}>Modal Text</Text>
+                    </View>
+                    <View style={styles.buttonView}>
+                        <TouchableHighlight onPress={() => this.closeModal('Cancel')} style={styles.touchableHighlight} underlayColor={'#f1f1f1'}>
+                            <Text style={[styles.text, { color: 'blue' }]}>Cancel</Text>
+                        </TouchableHighlight>
+                        <TouchableHighlight onPress={() => this.closeModal('OK')} style={styles.touchableHighlight} underlayColor={'#f1f1f1'}>
+                            <Text style={[styles.text, { color: 'blue' }]}>OK</Text>
+                        </TouchableHighlight>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        );
+    }
+}
+const styles = StyleSheet.create({
+    contentContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    modal: {
+        height: 150,
+        paddingTop: 10,
+        alignItems: 'center',
+        alignSelf: 'center',
+        textAlign: 'center',
+        backgroundColor: 'white',
+        borderRadius: 10,
+    },
+    text: {
+        margin: 5,
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    touchableHighlight: {
+        flex: 1,
+        backgroundColor: 'white',
+        paddingVertical: 10,
+        alignSelf: 'stretch',
+        alignItems: 'center',
+        borderRadius: 10,
+    },
+    textView: {
+        flex: 1,
+        alignItems: 'center'
+    },
+    buttonView: {
+        width: '100%',
+        flexDirection: 'row',
+    }
+})
